@@ -56,5 +56,15 @@ static async actualizarPassword(id, nuevaPassword) {
 const query = 'UPDATE users SET password = ? WHERE id = ?';
 return await executeQuery(query, [nuevaPassword, id]);
 }
+
+static async eliminar(id) {
+const query = 'DELETE FROM users WHERE id = ?';
+return await executeQuery(query, [id]);
+}
+static async actualizarRol(id, nuevoRol) {
+const query = 'UPDATE users SET rol = ? WHERE id = ?';
+return await executeQuery(query, [nuevoRol, id]);
+}
+
 }
 module.exports = Usuario;

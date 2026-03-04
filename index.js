@@ -28,7 +28,7 @@ mensaje: err.message || 'Error interno del servidor'
 });
 });
 // Middleware para rutas no encontradas
-app.use('*', (req, res) => {
+app.use('', (req, res) => {
 res.status(404).json({
 error: true,
 mensaje: 'Endpoint no encontrado'
@@ -39,3 +39,5 @@ app.listen(PORT, () => {
 console.log(` Servidor corriendo en puerto ${PORT}`);
 console.log(` Logs: ${process.env.NODE_ENV || 'development'}`);
 });
+const { testConnection } = require('./src/config/database');
+testConnection();
