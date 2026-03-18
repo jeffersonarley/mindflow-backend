@@ -12,6 +12,8 @@ app.use(express.urlencoded({ extended: true }));
 // Middleware para archivos estáticos
 app.use('/uploads', express.static('uploads'));
 // Rutas
+
+
 app.get('/', (req, res) => {
 res.json({
 mensaje: 'Marketplace Inteligente API',
@@ -40,4 +42,6 @@ console.log(` Servidor corriendo en puerto ${PORT}`);
 console.log(` Logs: ${process.env.NODE_ENV || 'development'}`);
 });
 const { testConnection } = require('./src/config/database');
+
+
 testConnection();
