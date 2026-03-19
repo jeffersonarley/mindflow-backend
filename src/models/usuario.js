@@ -1,6 +1,7 @@
 const { executeQuery } = require('../config/database');
 
 class Usuario {
+    // --- CREAR USUARIO ---
     static async crear(datosUsuario) {
         const { nombre, email, password, rol = 'comprador' } = datosUsuario;
         const query = `
@@ -18,62 +19,74 @@ class Usuario {
         }
     }
 
+    // --- BUSCAR POR EMAIL ---
     static async buscarPorEmail(email) {
         const query = 'SELECT * FROM users WHERE email = ?';
         const usuarios = await executeQuery(query, [email]);
         return usuarios.length > 0 ? usuarios[0] : null;
     }
 
+    // --- BUSCAR POR ID ---
     static async buscarPorId(id) {
         const query = 'SELECT id, nombre, email, rol, fecha_registro FROM users WHERE id = ?';
         const usuarios = await executeQuery(query, [id]);
         return usuarios.length > 0 ? usuarios[0] : null;
     }
 
-    static async obtenerTodos(filtros = {}) {
-        let query = 'SELECT id, nombre, email, rol, fecha_registro FROM users WHERE 1=1';
+    // --- TAREA 2: OBTENER TODOS CON FILTROS ---
+   static async obtenerTodos(filtros = {}) {
+        const { rol, q } = filtros;
+        
+        // 1. Base de la consulta
+        let sql = 'SELECT id, nombre, email, rol, fecha_registro FROM users WHERE 1=1';
         const params = [];
 
-        if (filtros.rol) {
-            query += ' AND rol = ?';
-            params.push(filtros.rol);
+        // 2. Filtro por Rol
+        if (rol && rol !== "") {
+            sql += ' AND rol = ?';
+            params.push(rol);
         }
 
-        if (filtros.busqueda) {
-            query += ' AND (nombre LIKE ? OR email LIKE ?)';
-            params.push(`%${filtros.busqueda}%`, `%${filtros.busqueda}%`);
+        // 3. Filtro por Búsqueda (q)
+        if (q && q !== "") {
+            sql += ' AND (nombre LIKE ? OR email LIKE ?)';
+            const busqueda = `%${q}%`;
+            params.push(busqueda, busqueda);
         }
 
-        const limite = parseInt(filtros.limite) || 10;
-        const offset = (parseInt(filtros.pagina) - 1) * limite || 0;
-        
-        query += ' ORDER BY fecha_registro DESC LIMIT ? OFFSET ?';
-        params.push(limite, offset);
+        // 4. Ordenar por fecha (Sin LIMIT por ahora para probar)
+        sql += ' ORDER BY fecha_registro DESC';
 
-        return await executeQuery(query, params);
+        try {
+            // Esto imprimirá en tu consola negra para que veas qué falla
+            console.log("SQL:", sql);
+            console.log("Parámetros:", params);
+            
+            return await executeQuery(sql, params);
+        } catch (error) {
+            console.error("Error en la consulta:", error);
+            throw error;
+        }
     }
 
-    // --- MÉTODOS DE ACTUALIZACIÓN Y ELIMINACIÓN ---
-
+    // --- TAREA 1: ACTUALIZAR ---
     static async actualizar(id, datos) {
         const { nombre, rol } = datos;
         const query = 'UPDATE users SET nombre = ?, rol = ? WHERE id = ?';
         return await executeQuery(query, [nombre, rol, id]);
     }
 
+    // --- TAREA 1: ELIMINAR ---
     static async eliminar(id) {
         const query = 'DELETE FROM users WHERE id = ?';
         return await executeQuery(query, [id]);
     }
 
+    // --- CAMBIAR CONTRASEÑA ---
     static async actualizarPassword(id, nuevaPassword) {
         const query = 'UPDATE users SET password = ? WHERE id = ?';
         return await executeQuery(query, [nuevaPassword, id]);
     }
 }
 
-<<<<<<< HEAD
-}
-=======
->>>>>>> 7c74f8417d18b22496ffe8ec208871f636c4138d
 module.exports = Usuario;
